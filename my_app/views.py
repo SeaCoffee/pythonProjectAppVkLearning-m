@@ -1,17 +1,15 @@
-from flask import request, jsonify, redirect, url_for
+from flask import request, jsonify, redirect, url_for, current_app
 from . import main
 from .adaptive_learning import adaptive_learning_instance
 from .models import UserProgress
 from .database import db_session
 from vk_api import VkApi
-from .. import my_app
 
 def init_vk():
-    vk_session = VkApi(token=my_app.config["VK_SERVICE_TOKEN"])
+    vk_session = VkApi(token=current_app.config["VK_SERVICE_TOKEN"])
     vk = vk_session.get_api()
     return vk
 
-app_instance = my_app
 vk_instance = init_vk()
 
 @main.route("/generate_text", methods=["POST"])
@@ -31,12 +29,12 @@ def get_user_progress():
     user_id = request.args.get("user_id")
     user_progress = UserProgress.query.filter_by(user_id=user_id).all()
     user_progress_data = [
-        {
-            "lesson_id": progress.lesson_id,
-            "progress": progress.progress,
-            "lesson_title": progress.lesson.title,
-        }
-        for progress in user_progress
+    {
+    "lesson_id": progress.lesson_id,
+    "progress": progress.progress,
+    "lesson_title": progress.lesson.title,
+    }
+    for progress in user_progress
     ]
     return jsonify({"user_progress": user_progress_data})
 
@@ -59,7 +57,7 @@ def update_user_progress():
 
 @main.route("/login/vk")
 def login_vk():
-    vk_auth_url = f"https://oauth.vk.com/authorize?client_id={my_app.config['VK_APP_ID']}&display=page&redirect_uri={url_for('authorize_vk', _external=True)}&scope=friends,photos&response_type=code&v=5.131"
+    vk_auth_url = f"https://oauth.vk.com/authorize?client_id={current_app.config['VK_APP_ID']}&display=page&redirect_uri={url_for('authorize_vk', _external=True)}&scope=friends,photos&response_type=code&v=5.131"
     return redirect(vk_auth_url)
 
 @main.route("/authorize/vk")
