@@ -1,5 +1,5 @@
 ﻿absl-py<=1.4.0
-alembic<=1.10.4
+alembic<=1.11.1
 api<=0.0.7
 astunparse<=1.6.3
 blinker<=1.6.2
